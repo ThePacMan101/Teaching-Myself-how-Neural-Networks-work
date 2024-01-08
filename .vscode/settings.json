@@ -2,5 +2,8 @@
     "files.associations": {
         "array": "c",
         "string": "c"
+    },
+    "[c]": {
+        "editor.tabSize": 4
     }
 }
