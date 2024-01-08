@@ -97,14 +97,14 @@ void matRand(Mat m, float low, float high){
 
 
 // dot product
-void matDot(Mat a, Mat b, Mat c){
-    assert(a.cols == b.rows && a.rows == c.rows && b.cols == c.cols);
+void matDot(Mat matrixA, Mat matrixB, Mat result){
+    assert(matrixA.cols == matrixB.rows && matrixA.rows == result.rows && matrixB.cols == result.cols);
 
-    for(int i = 0; i < a.rows; i++){
-        for(int j = 0; j < b.cols; j++){
-            MAT(c, i, j) = 0;
-            for(int k = 0; k < a.cols; k++){
-                MAT(c, i, j) += MAT(a, i, k) * MAT(b, k, j);
+    for(int i = 0; i < matrixA.rows; i++){
+        for(int j = 0; j < matrixB.cols; j++){
+            MAT(result, i, j) = 0;
+            for(int k = 0; k < matrixA.cols; k++){
+                MAT(result, i, j) += MAT(matrixA, i, k) * MAT(matrixB, k, j);
             }
         }
     }
@@ -112,12 +112,12 @@ void matDot(Mat a, Mat b, Mat c){
 
 
 // addition
-void matAdd(Mat a, Mat b, Mat c){
-    assert(a.rows == b.rows && a.cols == b.cols && a.rows == c.rows && a.cols == c.cols);
+void matAdd(Mat src, Mat dest){
+    assert(src.rows == dest.rows && src.cols == dest.cols);
 
-    for(int i = 0; i < a.rows; i++){
-        for(int j = 0; j < a.cols; j++){
-            MAT(c, i, j) = MAT(a, i, j) + MAT(b, i, j);
+    for(int i = 0; i < src.rows; i++){
+        for(int j = 0; j < src.cols; j++){
+            MAT(dest, i, j) += MAT(src, i, j);
         }
     }
 }

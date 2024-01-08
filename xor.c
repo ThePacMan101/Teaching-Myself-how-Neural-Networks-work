@@ -2,46 +2,11 @@
 #include "common.h"
 #include "mymath.h"
 
-float or_data[] = {
-    0, 0,   0,
-    0, 1,   1,
-    1, 0,   1,
-    1, 1,   1
-};
-
-float nor_data[] = {
-    0, 0,   1,
-    0, 1,   0,
-    1, 0,   0,
-    1, 1,   0
-};
-        
-float and_data[] = {
-    0, 0,   0,
-    0, 1,   0,
-    1, 0,   0,
-    1, 1,   1
-};
-                
-float nand_data[] = {
-    0, 0,   1,
-    0, 1,   1,
-    1, 0,   1,
-    1, 1,   0
-};
-
 float xor_data[] = {
     0, 0,   0,
     0, 1,   1,
     1, 0,   1,
     1, 1,   0
-};
-
-float imp_data[] = {
-    0, 0,   1,
-    0, 1,   1,
-    1, 0,   0,
-    1, 1,   1
 };
 
 float cost(Mat model, float w1, float w2, float b){
@@ -58,11 +23,12 @@ float cost(Mat model, float w1, float w2, float b){
     return sum;
 }
 
+
 int main(){
     srand(time(NULL));
     system("cls");
     Mat model = matAlloc(4,3);
-    model.data = imp_data;
+    model.data = xor_data;
 
 
     float w1 = rand_float()*10 - 5;
@@ -103,4 +69,6 @@ int main(){
     
 
     SHOW_MAT(model,4);
+
+
 }
