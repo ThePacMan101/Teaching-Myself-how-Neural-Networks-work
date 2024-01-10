@@ -13,8 +13,9 @@
 
 #define INDENT(n)   for(int k = 0; k < n; k++) printf(" ")
 // general use macro for indentation
-#define RAND(low,high)   ((float)rand()/(float)(RAND_MAX)) * ((high) - (low)) + (low)
 
+
+#define RAND(low,high)   (((float)rand()/(float)(RAND_MAX)) * ((high) - (low)) + (low))
 float rand_float(){
     return (float) rand()/ (float) RAND_MAX;
 }
