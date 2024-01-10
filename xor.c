@@ -4,10 +4,16 @@
 
 
 /*
-  x1 ->  O\
-           O -> y 
-  x2 ->  O/
+    The following is the architecture of the XOR gate below:
+        
+        x1 ->  O\
+                O -> y 
+        x2 ->  O/
+
 */
+
+// A network's structure meant to predict the output of the xor gate
+// using 3 neurons
 typedef struct {
     int count;
     float w1_1;
@@ -23,6 +29,7 @@ typedef struct {
     float b_3;
 }Xor;
 
+// data for the xor gate
 float xor_data[] = {
     0, 0,   0,
     0, 1,   1,
@@ -30,12 +37,15 @@ float xor_data[] = {
     1, 1,   0
 };
 
+// receives 2 inputs and a model and returns the model's
+// prediction for the given input
 float foward(Xor m, float x1, float x2){
     float a = sigmoidf(m.w1_1*x1 + m.w2_1*x2 + m.b_1);
     float b = sigmoidf(m.w1_2*x1 + m.w2_2*x2 + m.b_2);
     return  sigmoidf(a*m.w1_3 + b*m.w2_3 + m.b_3);
 }
 
+// returns the cost of a given network for a given model
 float cost(Mat model, Xor m){
     float sum = 0.0f;
     for(int i = 0; i < model.rows; ++i){
@@ -50,6 +60,7 @@ float cost(Mat model, Xor m){
     return sum;
 }
 
+// randomizes the network's weights and biases
 void rand_xor(Xor *m){
     m->w1_1 = rand_float()*10 - 5;
     m->w2_1 = rand_float()*10 - 5;
@@ -64,6 +75,7 @@ void rand_xor(Xor *m){
     m->b_3 = rand_float()*10 - 5;
 }
 
+// prints the network's weights and biases
 void print_xor(Xor m, int indent){
     INDENT(indent);printf("Xor={\n");
     
@@ -84,6 +96,8 @@ void print_xor(Xor m, int indent){
     // INDENT(indent);printf("aw1_3 + bw2_3 + b_3 = y\n");
 }
 
+// Receives a model and a Xor struct and returns the 
+// gradient of the model based on a finite difference method
 Xor finiteDiff(Mat model, Xor m,float eps){
     
     Xor g;
@@ -144,6 +158,8 @@ Xor finiteDiff(Mat model, Xor m,float eps){
     return g;
 }
 
+// Receives a model and a gradient, and returns the model
+// after a single gradient descent step acording to the learning rate
 Xor learn(Xor m, Xor g, float lr){
     m.w1_1 -= lr*g.w1_1;
     m.w2_1 -= lr*g.w2_1;

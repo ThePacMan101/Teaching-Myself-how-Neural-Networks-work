@@ -42,6 +42,8 @@ void matCopy(Mat src, Mat dst){
     }
 }
 
+
+// Starts a matrix
 Mat matAlloc(int rows, int cols){
     Mat m;
     m.rows = rows;
@@ -51,6 +53,7 @@ Mat matAlloc(int rows, int cols){
     return m;
 }
 
+// Fills a matrix with a value
 void matFill(Mat m, float val){
     for(int i = 0; i < m.rows; i++){
         for(int j = 0; j < m.cols; j++){
@@ -59,6 +62,7 @@ void matFill(Mat m, float val){
     }
 }
 
+// Applies a function to every element of a matrix
 void matFunc(Mat m, float (*func)(float)){
     for(int i = 0; i < m.rows; i++){
         for(int j = 0; j < m.cols; j++){
@@ -67,6 +71,16 @@ void matFunc(Mat m, float (*func)(float)){
     }
 }
 
+// Randomizes every element of a matrix between low and high
+void matRand(Mat m, float low, float high){
+    for(int i = 0; i < m.rows; i++){
+        for(int j = 0; j < m.cols; j++){
+            MAT(m, i, j) = RAND(low, high);
+        }
+    }
+}
+
+// Prints a matrix with identation
 void matShow(Mat m, int indent){
     for(int i = 0; i < m.rows; i++){
         INDENT(indent);printf("|");
@@ -78,13 +92,6 @@ void matShow(Mat m, int indent){
     }
 }
 
-void matRand(Mat m, float low, float high){
-    for(int i = 0; i < m.rows; i++){
-        for(int j = 0; j < m.cols; j++){
-            MAT(m, i, j) = RAND(low, high);
-        }
-    }
-}
 //Can be used standalone, but most of the time it'll be used by the macros above
 
 
