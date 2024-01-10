@@ -50,6 +50,7 @@ Mat matAlloc(int rows, int cols){
     m.cols = cols;
     m.stride = cols;
     m.data = (float*)calloc(rows * cols, sizeof(float));
+    assert(m.data != NULL);
     return m;
 }
 
@@ -82,11 +83,12 @@ void matRand(Mat m, float low, float high){
 
 // Prints a matrix with identation
 void matShow(Mat m, int indent){
+    char str[10];
     for(int i = 0; i < m.rows; i++){
         INDENT(indent);printf("|");
         for(int j = 0; j < m.cols; j++){
-            printf("%*.*f\t|",4,3, MAT(m, i, j));
-            //Iprintf_f(4,MAT(m, i, j));
+            sprintf(str,"%8g|", MAT(m, i, j));
+            printf("%s",str);
         }
         printf("\n");
     }
@@ -104,9 +106,23 @@ void matShow(Mat m, int indent){
 
 
 // dot product
-void matDot(Mat matrixA, Mat matrixB, Mat result){
-    assert(matrixA.cols == matrixB.rows && matrixA.rows == result.rows && matrixB.cols == result.cols);
-
+void matDot(Mat result , Mat matrixA , Mat matrixB){ 
+    //
+    //  using: ROWxCOL
+    //            NxM             PxQ          NxQ
+    //        |... , ...|     |... , ...|      |... , ...|
+    //        |... , ...|  *  |... , ...|  ==  |... , ...|
+    //        |   ...   |     |   ...   |      |   ...   |
+    //            
+    //        IF M != P, the operation is not possible
+    //
+    //      e.g.:
+    //           3x1               3x2
+    //           |a|   1x2         |ax , ay|
+    //           |b| * |x , y| ==  |bx , by|
+    //           |c|               |cx , cy|
+    //
+    assert(matrixA.cols == matrixB.rows && matrixA.rows == result.rows && matrixB.cols == result.cols);    
     for(int i = 0; i < matrixA.rows; i++){
         for(int j = 0; j < matrixB.cols; j++){
             MAT(result, i, j) = 0;
@@ -119,7 +135,7 @@ void matDot(Mat matrixA, Mat matrixB, Mat result){
 
 
 // addition
-void matAdd(Mat src, Mat dest){
+void matAdd(Mat dest , Mat src){
     assert(src.rows == dest.rows && src.cols == dest.cols);
 
     for(int i = 0; i < src.rows; i++){

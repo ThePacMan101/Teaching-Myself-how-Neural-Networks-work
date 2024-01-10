@@ -7,6 +7,10 @@
 #include <time.h>
 #include <math.h>
 
+#define bool int
+#define true 1
+#define false 0
+
 #define INDENT(n)   for(int k = 0; k < n; k++) printf(" ")
 // general use macro for indentation
 #define RAND(low,high)   ((float)rand()/(float)(RAND_MAX)) * ((high) - (low)) + (low)
