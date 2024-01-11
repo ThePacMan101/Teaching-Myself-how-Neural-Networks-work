@@ -148,18 +148,21 @@ void matDot(Mat result , Mat a , Mat b){
     //
     //  using: ROWxCOL
     //            NxM             PxQ          NxQ
+    //        +---------+     +---------+      +---------+
     //        |... , ...|     |... , ...|      |... , ...|
     //        |... , ...|  *  |... , ...|  ==  |... , ...|
     //        |   ...   |     |   ...   |      |   ...   |
+    //        +---------+     +---------+      +---------+
     //            
     //        IF M != P, the operation is not possible
     //
     //      e.g.:
     //           3x1               3x2
-    //           |a|   1x2         |ax , ay|
+    //           +-+   1x2         +---+---+   
+    //           |a|   +--+--+     |ax , ay|
     //           |b| * |x , y| ==  |bx , by|
-    //           |c|               |cx , cy|
-    //
+    //           |c|   +--+--+     |cx , cy|
+    //           +-+               +---+---+   
     assert(a.cols == b.rows && a.rows == result.rows && b.cols == result.cols);    
     for(int i = 0; i < a.rows; i++){
         for(int j = 0; j < b.cols; j++){
