@@ -1,7 +1,6 @@
 #include "matrix.h"
 #include "common.h"
 #include "mymath.h"
-#include "NN.h"
 
 /*
 ==========================================================
@@ -240,7 +239,9 @@ int main(){
         for(int j = 0 ; j < 2 ; j ++){
             MAT(m.as[0],0,0) = i;
             MAT(m.as[0],0,1) = j;
-            printf("%i ^ %i = %f\n",i,j,foward(m));
+            foward(m);  // foward with inputs i and j, to represent the truth table
+            float y = m.as[m.count].data[0];  // y is the activation of the last layer == output
+            printf("%i ^ %i = %f\n",i,j,y);
         }
 
 }

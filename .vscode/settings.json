@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "array": "c",
-        "string": "c"
+        "string": "c",
+        "random": "c"
     },
     "[c]": {
         "editor.tabSize": 4
