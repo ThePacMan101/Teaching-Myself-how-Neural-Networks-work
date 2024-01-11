@@ -33,7 +33,7 @@ typedef struct{
     printf("%f     ", arg);
 // _f stands for float here. Usefull if I ever need a matrix of ints, doubles or something else
 
-void matCopy(Mat src, Mat dst){
+void matCopy(Mat dst, Mat src){
     assert(src.rows == dst.rows && src.cols == dst.cols);
     for(int i = 0; i < src.rows; i++){
         for(int j = 0; j < src.cols; j++){
@@ -83,19 +83,57 @@ void matRand(Mat m, float low, float high){
 
 // Prints a matrix with identation
 void matShow(Mat m, int indent){
-    char str[10];
+    //┌─┐│
+    char str[50];
+    INDENT(indent);
+    for(int c = 0 ; c < m.cols ; ++c){
+        printf("+");
+        for(int i=0 ; i < 8 ; ++i) printf("-");
+    }
+    printf("+\n");
     for(int i = 0; i < m.rows; i++){
         INDENT(indent);printf("|");
         for(int j = 0; j < m.cols; j++){
-            sprintf(str,"%8g|", MAT(m, i, j));
-            printf("%s",str);
+            sprintf(str,"%8g", MAT(m, i, j));
+            for(int c=0;c<8;c++)
+                printf("%c",str[c]);
+            printf("|");
         }
         printf("\n");
     }
+    INDENT(indent);
+    for(int c = 0 ; c < m.cols ; ++c){
+        printf("+");
+        for(int i=0 ; i < 8 ; ++i) printf("-");
+    }
+    printf("+\n");
 }
 
 //Can be used standalone, but most of the time it'll be used by the macros above
 
+Mat matRow(Mat m, int row){
+    
+    assert((row < m.rows) && (row >= 0));
+    Mat r;
+    r.data =&MAT(m, row, 0);
+    r.cols = m.cols;
+    r.stride = m.stride;
+    r.rows = 1;
+
+    return r;
+    
+}
+
+Mat matCol(Mat m, int col){
+    assert((col < m.cols) && (col >= 0));
+    Mat c;
+    c.data = &MAT(m, 0, col);
+    c.cols = 1;
+    c.stride = m.stride;
+    c.rows = m.rows;
+    
+    return c;
+}
 
 
 
@@ -106,7 +144,7 @@ void matShow(Mat m, int indent){
 
 
 // dot product
-void matDot(Mat result , Mat matrixA , Mat matrixB){ 
+void matDot(Mat result , Mat a , Mat b){ 
     //
     //  using: ROWxCOL
     //            NxM             PxQ          NxQ
@@ -122,12 +160,12 @@ void matDot(Mat result , Mat matrixA , Mat matrixB){
     //           |b| * |x , y| ==  |bx , by|
     //           |c|               |cx , cy|
     //
-    assert(matrixA.cols == matrixB.rows && matrixA.rows == result.rows && matrixB.cols == result.cols);    
-    for(int i = 0; i < matrixA.rows; i++){
-        for(int j = 0; j < matrixB.cols; j++){
+    assert(a.cols == b.rows && a.rows == result.rows && b.cols == result.cols);    
+    for(int i = 0; i < a.rows; i++){
+        for(int j = 0; j < b.cols; j++){
             MAT(result, i, j) = 0;
-            for(int k = 0; k < matrixA.cols; k++){
-                MAT(result, i, j) += MAT(matrixA, i, k) * MAT(matrixB, k, j);
+            for(int k = 0; k < a.cols; k++){
+                MAT(result, i, j) += MAT(a, i, k) * MAT(b, k, j);
             }
         }
     }
