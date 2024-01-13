@@ -16,7 +16,6 @@ typedef struct{
 #define NN_INPUT(nn) ((Mat)(nn).a[0])
 #define NN_OUTPUT(nn) ((Mat)(nn).a[(nn).count])
 
-
 // exemple use: NNbuild((int[]){ 2 , 2 , 1 ,-1});
 // builds: 2 input neurons -> 3 hidden neurons -> 1 output neuron
 // all neurons are fully connected
@@ -109,10 +108,10 @@ void foward(NN m, float (*func)(float)){
 float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
 
     int inprows = input.rows;
-    int expcols = expected.cols;
+    
 
-    // assert(inprows == expected.rows);
-    // assert(expcols == nn.a[nn.count].cols);
+    assert(inprows == expected.rows);
+    assert(expected.cols == NN_OUTPUT(nn).cols);
     
 
     float sum = 0.0f;
@@ -120,11 +119,12 @@ float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
         Mat x = matRow(input,L);
         Mat y = matRow(expected,L);
         
-        matCopy(nn.a[0],x);
+        matCopy(NN_INPUT(nn),x);
         foward(nn,func);
-
+        int expcols = expected.cols;
         for(int j = 0 ; j < expcols ; ++j){
-            sum += pow(MAT(nn.a[nn.count],0,j) - MAT(y,0,j),2);
+            float d = MAT(NN_OUTPUT(nn),0,j) - MAT(y,0,j);
+            sum += d*d;
         }
 
     }
