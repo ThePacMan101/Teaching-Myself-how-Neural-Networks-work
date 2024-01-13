@@ -53,10 +53,10 @@ NN NNbuild(int *architecture){
     // a in: {2 , 2 , 1} we have a0 = |x1 , x2| which is a 1x2 matrix, representing our inputs
 
     //Now we have to loop through the architecture array to build the rest of the NN
-    for(int i = 1 ; i < layers ; ++i){
-        nn.w[i-1] = matAlloc(nn.a[i-1].cols,architecture[i]);
-        nn.b[i-1] = matAlloc(1,architecture[i]);
-        nn.a[i] = matAlloc(1,architecture[i]);
+    for(int L = 1 ; L < layers ; ++L){
+        nn.w[L-1] = matAlloc(nn.a[L-1].cols,architecture[L]);
+        nn.b[L-1] = matAlloc(1,architecture[L]);
+        nn.a[L] = matAlloc(1,architecture[L]);
     }
 
     return nn;
@@ -75,30 +75,30 @@ NN NNbuild(int *architecture){
 
 void NNprint(NN nn,int indent){
     Mat *w,*b;
-    for(int i = 0; i < nn.count; i++){
-        INDENT(indent);printf("layer %d = {\n",i);
-        w=nn.w+i;
-        b=nn.b+i;
-        INDENT(indent+4);printf("w%d\e\e",i);
+    for(int L = 0; L < nn.count; L++){
+        INDENT(indent);printf("layer %d = {\n",L);
+        w=nn.w+L;
+        b=nn.b+L;
+        INDENT(indent+4);printf("w%d\e\e",L);
         SHOW_MAT(*w,indent+4);
-        INDENT(indent+4);printf("b%d\e\e",i);
+        INDENT(indent+4);printf("b%d\e\e",L);
         SHOW_MAT(*b,indent+4);
         INDENT(indent);printf("}\n");
     }
 }
 
 void NNrand(NN nn, float low, float high){
-    for(int i = 0; i < nn.count; i++){
-        matRand(nn.w[i],low,high);
-        matRand(nn.b[i],low,high);
+    for(int L = 0; L < nn.count; L++){
+        matRand(nn.w[L],low,high);
+        matRand(nn.b[L],low,high);
     }
 }
 
 float foward(NN m, float (*func)(float)){
-    for(int i = 0 ; i< m.count; i++){
-        matDot(m.a[i+1],m.a[i],m.w[i]);
-        matAdd(m.a[i+1],m.b[i]);
-        matFunc(m.a[i+1],func);
+    for(int L = 0 ; L< m.count; L++){
+        matDot(m.a[L+1],m.a[L],m.w[L]);
+        matAdd(m.a[L+1],m.b[L]);
+        matFunc(m.a[L+1],func);
     }
     return MAT(m.a[m.count],0,0);
 }
@@ -113,9 +113,9 @@ float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
     
 
     float sum = 0.0f;
-    for(int i = 0 ; i < inprows ; ++i){
-        Mat x = matRow(input,i);
-        Mat y = matRow(expected,i);
+    for(int L = 0 ; L < inprows ; ++L){
+        Mat x = matRow(input,L);
+        Mat y = matRow(expected,L);
         
         matCopy(nn.a[0],x);
         foward(nn,func);
@@ -132,7 +132,6 @@ float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
 NN finiteDiff(NN nn , NN g, Mat input, Mat expected, float eps,float (*func)(float)){
     float saved;
     float c = cost(nn,input,expected,func);
-
     //ITERATE THROUGH EACH LAYER OF THE NETWORK
     for(int L = 0 ; L < nn.count ; ++L){
         
@@ -156,11 +155,11 @@ NN finiteDiff(NN nn , NN g, Mat input, Mat expected, float eps,float (*func)(flo
         }
        
     }
-
     return g;
 }
 
 void learn(NN nn, NN g, float lr){
+    // SHOW_NN(g,0);
     for(int L = 0 ; L < nn.count ; ++L){
         
         //ITERATE THROUGH EACH WEIGHT OF THE LAYER
@@ -177,6 +176,65 @@ void learn(NN nn, NN g, float lr){
         }
        
     }
+    // SHOW_NN(g,0);
 }
+
+void saveNN(NN nn, char *filename){
+    FILE *fp = fopen(filename,"wb");
+    assert(fp != NULL);
+    fwrite(&nn.count,sizeof(int),1,fp);
+    fwrite(&nn.a[0].cols,sizeof(int),1,fp);
+    for(int L = 0 ; L < nn.count ; ++L){
+        fwrite(&nn.w[L].rows,sizeof(int),1,fp);
+        fwrite(&nn.w[L].cols,sizeof(int),1,fp);
+        fwrite(nn.w[L].data,sizeof(float),nn.w[L].rows*nn.w[L].cols,fp);
+        
+        fwrite(&nn.b[L].rows,sizeof(int),1,fp);
+        fwrite(&nn.b[L].cols,sizeof(int),1,fp);
+        fwrite(nn.b[L].data,sizeof(float),nn.b[L].rows*nn.b[L].cols,fp);
+    }     
+        
+
+    fclose(fp);
+}
+
+NN loadNN(char *filename){
+    FILE *fp = fopen(filename,"rb");
+    assert(fp != NULL);
+    NN nn;
+    int count;
+    fread(&count,sizeof(int),1,fp);
+    nn.count = count;
+    fread(&count,sizeof(int),1,fp);
+    nn.w = (Mat*) malloc(sizeof(Mat)*nn.count);
+    nn.b = (Mat*) malloc(sizeof(Mat)*nn.count);
+    nn.a = (Mat*) malloc(sizeof(Mat)*(nn.count+1));
+    nn.a[0] = matAlloc(1,count);
+
+    for(int L = 0 ; L < nn.count ; ++L){
+        int r,c;
+        fread(&r,sizeof(int),1,fp);
+        fread(&c,sizeof(int),1,fp);
+        nn.w[L] = matAlloc(r,c);
+        nn.w[L].data = malloc(sizeof(float)*r*c);
+        fread(nn.w[L].data,sizeof(float),r*c,fp);
+
+        fread(&r,sizeof(int),1,fp);
+        fread(&c,sizeof(int),1,fp);
+        nn.b[L] = matAlloc(r,c);
+        nn.b[L].data = malloc(sizeof(float)*r*c);
+        fread(nn.b[L].data,sizeof(float),r*c,fp);
+
+        nn.a[L+1] = matAlloc(r,c);
+        // printf("Layer:%d w:%dx%d b%dx%d\n",L,
+        // nn.w[L].rows,
+        // nn.w[L].cols,
+        // nn.b[L].rows,
+        // nn.b[L].cols );
+    
+    }
+    return nn;
+}
+
 
 #endif // NN_H
