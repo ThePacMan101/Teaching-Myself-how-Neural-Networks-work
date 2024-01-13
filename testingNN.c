@@ -112,7 +112,6 @@ int main(){
     }
     printf("\n");
     SHOW_NN(nn,0);
-
     float c = cost(nn,inputs,expected,func);
     printf("final cost:%f\n",c);
     printf("====================================\n");

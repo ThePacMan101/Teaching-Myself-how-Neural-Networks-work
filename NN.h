@@ -13,6 +13,9 @@ typedef struct{
     Mat *a;     // Array of activations, there is 1 more than count
 } NN;
 
+#define NN_INPUT(nn) ((Mat)(nn).a[0])
+#define NN_OUTPUT(nn) ((Mat)(nn).a[(nn).count])
+
 
 // exemple use: NNbuild((int[]){ 2 , 2 , 1 ,-1});
 // builds: 2 input neurons -> 3 hidden neurons -> 1 output neuron
@@ -94,13 +97,13 @@ void NNrand(NN nn, float low, float high){
     }
 }
 
-float foward(NN m, float (*func)(float)){
+void foward(NN m, float (*func)(float)){
     for(int L = 0 ; L< m.count; L++){
         matDot(m.a[L+1],m.a[L],m.w[L]);
         matAdd(m.a[L+1],m.b[L]);
         matFunc(m.a[L+1],func);
     }
-    return MAT(m.a[m.count],0,0);
+    // return MAT(m.a[m.count],0,0);
 }
 
 float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
