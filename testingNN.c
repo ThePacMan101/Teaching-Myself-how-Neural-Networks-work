@@ -80,7 +80,7 @@ float another_data[] = {
 
 float eps = 1e-2;
 float lr = 1e-1;
-float (*func)(float) = sigmoidf;
+float (*func)(float) = sigmoidf; 
 
 int main(){
     srand(time(NULL));
@@ -104,11 +104,11 @@ int main(){
     printf("cost:%f\n",cost(nn,inputs,expected,func));
     printf("====================================\n");
 
-    for(int epoch = 0 ; epoch < 100000 ; ++epoch){
+    for(int epoch = 0 ; epoch < 400000 ; ++epoch){
         g = finiteDiff(nn,g,inputs,expected,eps,func);
         //SHOW_NN(g,0);
         learn(nn,g,lr);
-        if(epoch%10000 == 0) printf("#");
+        if(epoch%40000 == 0) printf("#");
     }
     printf("\n");
     SHOW_NN(nn,0);
@@ -116,10 +116,14 @@ int main(){
     float c = cost(nn,inputs,expected,func);
     printf("final cost:%f\n",c);
     printf("====================================\n");
-    if(c<1e-1){
-        saveNN(nn,"models/b10addition.bin");
-        printf("saved!\n");
-    }
+    
+    
+    // if(c<1e-1){
+    //     saveNN(nn,"models/times3.bin");
+    //     printf("saved!\n");
+    // }
+
+
     // while(1){
     //     int a,b;
     //     printf("enter two numbers: ");
