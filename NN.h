@@ -109,11 +109,10 @@ float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
 
     int inprows = input.rows;
     
-
     assert(inprows == expected.rows);
     assert(expected.cols == NN_OUTPUT(nn).cols);
     
-
+    
     float sum = 0.0f;
     for(int L = 0 ; L < inprows ; ++L){
         Mat x = matRow(input,L);
