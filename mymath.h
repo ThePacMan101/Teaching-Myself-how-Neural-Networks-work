@@ -12,7 +12,7 @@ float sigmoidf(float x){
 }
 
 float dsigmoidf(float x){
-    return x * (1.0f - x);
+    return sigmoidf(x) * (1.0f - sigmoidf(x));
 }
 
 float relu(float x){

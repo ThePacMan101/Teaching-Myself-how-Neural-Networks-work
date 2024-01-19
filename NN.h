@@ -11,6 +11,9 @@ typedef struct{
     Mat *w;     // Array of matrices
     Mat *b;     // Array of biases
     Mat *a;     // Array of activations, there is 1 more than count
+    
+    float (*func)(float);   // Activation function
+    float (*dfunc)(float);  // Derivative of activation function
 } NN;
 
 #define NN_INPUT(nn) ((Mat)(nn).a[0])
@@ -131,7 +134,7 @@ float cost(NN nn, Mat input, Mat expected, float (*func)(float)){
     return sum;
 }
 
-NN finiteDiff(NN nn , NN g, Mat input, Mat expected, float eps,float (*func)(float)){
+NN finiteDiff(NN nn , NN g, Mat input, Mat expected, float eps, float (*func)(float)){
     float saved;
     float c = cost(nn,input,expected,func);
     //ITERATE THROUGH EACH LAYER OF THE NETWORK
@@ -158,6 +161,57 @@ NN finiteDiff(NN nn , NN g, Mat input, Mat expected, float eps,float (*func)(flo
        
     }
     return g;
+}
+
+// can only use sigmoid for now...
+void backProp(NN nn, NN g, Mat input, Mat expected){
+    assert(input.rows == expected.rows);
+    assert(expected.cols == NN_OUTPUT(nn).cols);
+
+    // FOR EACH SAMPLE
+    for(int S = 0 ; S < input.rows ; ++S){
+        matCopy(NN_INPUT(nn),matRow(input,S));
+        foward(nn,nn.func);
+        
+        for(int i = 0 ; i < expected.cols ; ++i){
+            // save the differences between the output and the expected
+            // to prevent memory waste, we use the gradient's activation matrix
+            MAT(NN_OUTPUT(g),0,i) = MAT(NN_OUTPUT(nn),0,i) - MAT(expected,S,i);
+        }
+
+        // FOR EACH LAYER (BACKWARDS)
+        for(int L = nn.count ; L > 0 ; --L){
+            
+            // Current activations
+            for(int c = 0 ; c < nn.a[L].cols ; ++c){
+                float a = MAT(nn.a[L],0,c);
+                float da = MAT(g.a[L],0,c);
+                MAT(g.b[L-1],0,c) += 2*da*a*(1-a);
+
+                // Previous activations
+                for(int p = 0 ; p < nn.a[L-1].cols ; ++p){
+                    float pa = MAT(nn.a[L-1],0,p);
+                    float w = MAT(nn.w[L-1],p,c);
+
+                    MAT(g.w[L-1],p,c) += 2*da*a*(1-a)*pa;   // wtf?
+                    MAT(g.a[L-1],0,p) +=2*da*a*(1-a)*w;
+                }
+            }
+        }
+    }
+
+    for(int i = 0 ; i < g.count ; ++i){
+        for(int j = 0 ; j < g.w[i].rows ; ++j){
+            for(int k = 0 ; k < g.w[i].cols ; ++k){
+                MAT(g.w[i],j,k) /= input.rows;
+            }
+        }
+        for(int j = 0 ; j < g.b[i].rows ; ++j){
+            for(int k = 0 ; k < g.b[i].cols ; ++k){
+                MAT(g.b[i],j,k) /= input.rows;
+            }
+        }
+    }
 }
 
 void learn(NN nn, NN g, float lr){
@@ -218,13 +272,13 @@ NN loadNN(char *filename){
         fread(&r,sizeof(int),1,fp);
         fread(&c,sizeof(int),1,fp);
         nn.w[L] = matAlloc(r,c);
-        nn.w[L].data = malloc(sizeof(float)*r*c);
+        nn.w[L].data = (float*)malloc(sizeof(float)*r*c);
         fread(nn.w[L].data,sizeof(float),r*c,fp);
 
         fread(&r,sizeof(int),1,fp);
         fread(&c,sizeof(int),1,fp);
         nn.b[L] = matAlloc(r,c);
-        nn.b[L].data = malloc(sizeof(float)*r*c);
+        nn.b[L].data = (float*)malloc(sizeof(float)*r*c);
         fread(nn.b[L].data,sizeof(float),r*c,fp);
 
         nn.a[L+1] = matAlloc(r,c);
@@ -236,6 +290,15 @@ NN loadNN(char *filename){
     
     }
     return nn;
+}
+
+void fillNN(NN nn, float x){
+    matFill(nn.a[0],x);
+    for(int L = 0 ; L < nn.count ; ++L){
+        matFill(nn.w[L],x);
+        matFill(nn.b[L],x);
+        matFill(nn.a[L+1],x);
+    }
 }
 
 
