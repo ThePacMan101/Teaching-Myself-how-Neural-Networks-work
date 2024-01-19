@@ -13,8 +13,8 @@ float xor_data[] = {
 float (*func)(float) = sigmoidf;
 
 int main(){
-    // srand(time(NULL));
-    srand(69);
+    srand(time(NULL));
+    // srand(69);
     Mat input = {
         .rows = 4,
         .cols = 2,
@@ -35,19 +35,24 @@ int main(){
     NNrand(nn,0,1);
     float lr = 1e-1;
 
-    printf("cost = %f\n",cost(nn,input,expected,func));
+    printf("initial cost = %f\n",cost(nn,input,expected,func));
     SHOW_NN(nn,0);
-    for(int i = 0 ; i < 1 ; ++i){
+    for(int i = 0 ; i < 100000 ; ++i){
 #if 0
         float eps = 1e-1;
         finiteDiff(nn,g,input,expected,eps,func);        
 #else
         backProp(nn,g,input,expected);
 #endif
-        SHOW_NN(g,0);
+
+        learn(nn,g,lr);
+        // printf("cost = %f\n",cost(nn,input,expected,func));
+        // SHOW_NN(g,0);
 
     }
-
+    SHOW_NN(nn,0);
+    printf("final cost = %f\n",cost(nn,input,expected,func));
+    
     for(int i = 0 ; i < 2 ; ++i){
         for(int j = 0 ; j < 2 ; ++j){
             MAT(NN_INPUT(nn),0,0) = i;

@@ -172,7 +172,11 @@ void backProp(NN nn, NN g, Mat input, Mat expected){
     for(int S = 0 ; S < input.rows ; ++S){
         matCopy(NN_INPUT(nn),matRow(input,S));
         foward(nn,nn.func);
-        
+
+        for(int i = 0 ; i <= nn.count ; ++i){
+            matFill(g.a[i],0.0f);
+        }
+
         for(int i = 0 ; i < expected.cols ; ++i){
             // save the differences between the output and the expected
             // to prevent memory waste, we use the gradient's activation matrix
