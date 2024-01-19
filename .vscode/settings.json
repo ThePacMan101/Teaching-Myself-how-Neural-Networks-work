@@ -2,7 +2,8 @@
     "files.associations": {
         "array": "c",
         "string": "c",
-        "random": "c"
+        "random": "c",
+        "matrix.h": "c"
     },
     "[c]": {
         "editor.tabSize": 4
