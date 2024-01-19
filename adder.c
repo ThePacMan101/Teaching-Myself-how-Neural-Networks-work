@@ -4,7 +4,7 @@
 #include "matrix.h"
 // #include "adderData.h"
 
-#define BITS 3
+#define BITS 2
 
 int main(){
     srand(time(NULL));
@@ -66,7 +66,7 @@ int main(){
     // SHOW_NN(nn,0);
     // 
     // printf("====================================\n");
-    for(int i = 0 ; i < BITS*10000 ; ++i){
+    for(int i = 0 ; i < 100000 ; ++i){
         // float c = cost(nn,input,output,sigmoidf);
         // printf("%d: cost = %f\n",i,c);
         backProp(nn,g,input,output);
