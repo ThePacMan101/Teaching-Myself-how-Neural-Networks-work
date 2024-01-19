@@ -37,18 +37,11 @@ int main(){
 
     printf("initial cost = %f\n",cost(nn,input,expected,func));
     SHOW_NN(nn,0);
-    for(int i = 0 ; i < 100000 ; ++i){
-#if 0
-        float eps = 1e-1;
-        finiteDiff(nn,g,input,expected,eps,func);        
-#else
+    for(int i = 0 ; i < 5000 ; ++i){
         backProp(nn,g,input,expected);
-#endif
-
         learn(nn,g,lr);
         // printf("cost = %f\n",cost(nn,input,expected,func));
         // SHOW_NN(g,0);
-
     }
     SHOW_NN(nn,0);
     printf("final cost = %f\n",cost(nn,input,expected,func));
