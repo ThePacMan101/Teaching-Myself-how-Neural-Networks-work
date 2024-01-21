@@ -67,7 +67,7 @@ int main(){
     // SHOW_NN(nn,0);
     // 
     // printf("====================================\n");
-    for(int i = 0 ; i < 100000 ; ++i){
+    for(int i = 0 ; i < 1000000 ; ++i){
         // float c = cost(nn,input,output,sigmoidf);
         // printf("%d: cost = %f\n",i,c);
         backProp(nn,g,input,output);
@@ -81,18 +81,14 @@ int main(){
     for(int x = 0 ; x < n ; ++x){
         for(int y = 0 ; y < n ; ++y){
             for(int i = 0 ; i < BITS ; ++i){
-                MAT(NN_INPUT(nn),0,i)       = (x>>i)&1;
-                MAT(NN_INPUT(nn),0,i+BITS)  = (y>>i)&1;
+                MAT(NN_INPUT(nn),0,BITS-1-i)        = (x>>i)&1;
+                MAT(NN_INPUT(nn),0,2*BITS-1-i)      = (y>>i)&1;
             }
             foward(nn,sigmoidf);
-            //int z = 0;
-            //printf("\n%d + %d = %d\n",x,y,z);
-            printf("\n%d + %d  = ",x,y);
+            printf("\n%u + %u = ",x,y);
             for(int i = 0 ; i <BITS+1 ; ++i){
                 printf("%d",MAT(NN_OUTPUT(nn),0,i)>0.5f);
             }
-            // SHOW_MAT(NN_OUTPUT(nn),4);
-            // printf("\n====\n");
         }
     }
 
