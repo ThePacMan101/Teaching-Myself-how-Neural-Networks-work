@@ -85,11 +85,14 @@ int main(){
             }
             foward(nn,sigmoidf);
             int z = 0;
-            for(int i = 0 ; i < BITS ; ++i){
-                int bit =  MAT(NN_OUTPUT(nn),0,i)>0.5f;;
+            for(int i = 0 ; i < BITS+1 ; ++i){
+                int bit =  MAT(NN_OUTPUT(nn),0,i)>0.5f;
                 z |= bit<<i;
             }
             printf("%d + %d = %d\n",x,y,z);
+            printf("%d + %d  = \n ",x,y);
+            SHOW_MAT(NN_OUTPUT(nn),4);
+            printf("\n====\n");
         }
     }
 
