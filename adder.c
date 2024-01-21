@@ -62,7 +62,8 @@ int main(){
     
     nn.func=sigmoidf;
     NNrand(nn,-1,1);
-
+    SHOW_MAT(input,0);
+    SHOW_MAT(output,0);
     // SHOW_NN(nn,0);
     // 
     // printf("====================================\n");
@@ -73,7 +74,7 @@ int main(){
         learn(nn,g,0.1f);
     }
     printf("====================================\n");
-    SHOW_NN(nn,0);
+    // SHOW_NN(nn,0);
     float c = cost(nn,input,output,sigmoidf);
     printf("final cost = %f\n",c);
     
@@ -84,15 +85,14 @@ int main(){
                 MAT(NN_INPUT(nn),0,i+BITS)  = (y>>i)&1;
             }
             foward(nn,sigmoidf);
-            int z = 0;
-            for(int i = 0 ; i < BITS+1 ; ++i){
-                int bit =  MAT(NN_OUTPUT(nn),0,i)>0.5f;
-                z |= bit<<i;
+            //int z = 0;
+            //printf("\n%d + %d = %d\n",x,y,z);
+            printf("\n%d + %d  = ",x,y);
+            for(int i = 0 ; i <BITS+1 ; ++i){
+                printf("%d",MAT(NN_OUTPUT(nn),0,i)>0.5f);
             }
-            printf("%d + %d = %d\n",x,y,z);
-            printf("%d + %d  = \n ",x,y);
-            SHOW_MAT(NN_OUTPUT(nn),4);
-            printf("\n====\n");
+            // SHOW_MAT(NN_OUTPUT(nn),4);
+            // printf("\n====\n");
         }
     }
 
