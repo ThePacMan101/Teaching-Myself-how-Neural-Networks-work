@@ -77,5 +77,20 @@ int main(){
     float c = cost(nn,input,output,sigmoidf);
     printf("final cost = %f\n",c);
     
+    for(int x = 0 ; x < n ; ++x){
+        for(int y = 0 ; y < n ; ++y){
+            for(int i = 0 ; i < BITS ; ++i){
+                MAT(NN_INPUT(nn),0,i)       = (x>>i)&1;
+                MAT(NN_INPUT(nn),0,i+BITS)  = (y>>i)&1;
+            }
+            foward(nn,sigmoidf);
+            int z = 0;
+            for(int i = 0 ; i < BITS ; ++i){
+                int bit =  MAT(NN_OUTPUT(nn),0,i)>0.5f;;
+                z |= bit<<i;
+            }
+            printf("%d + %d = %d\n",x,y,z);
+        }
+    }
 
 }
